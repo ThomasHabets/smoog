@@ -1,0 +1,17 @@
+smoog/README
+
+Thomas Habets
+
+Scripts
+-------
+albumSettings.py          Change album settings in bulk.
+kwRename.py               Rename/remove a keyword everywhere it's used.
+listAlbums.py             List albums in various output formats.
+
+TODO
+----
+OAuth
+settingsDiff.py           See differences in settings between albums/images.
+backup.py / restore.py    Backup all keywords & settings.
+copyAlbum.py              Copy album, photos and all, into a new one.
+upload.py                 Upload new photos.
