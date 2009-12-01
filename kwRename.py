@@ -9,7 +9,7 @@ Examples
     kwRename.py \d+ ""
 
   Fix spelling:
-    kwRename jurop Europe
+    kwRename.py jurop Europe
 
 """
 import smoog as smug
