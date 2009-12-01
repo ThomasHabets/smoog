@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import smug
+import smoog as smug
 
 def html():
     s = smug.Smug(*smug.userCredentials())
