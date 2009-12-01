@@ -2,6 +2,19 @@ smoog/README
 
 Thomas Habets
 
+
+Intro
+-----
+For now you will need a file called ~/.smug.cfg that contains three lines.
+1) Your API key
+2) Your email
+3) your smugmug password
+
+All scripts read the login info from there at the moment.
+
+This will be improved upon.
+
+
 Scripts
 -------
 albumSettings.py          Change album settings in bulk.
