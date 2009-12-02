@@ -113,6 +113,12 @@ class Smug(object):
         self.session = None
         self._login()
 
+    def __del__(self):
+        try:
+            self._logout()
+        except:
+            pass
+
     def _login(self):
         """Smug._login()
         """
@@ -121,6 +127,11 @@ class Smug(object):
                                 'EmailAddress' : self.email,
                                 'Password'     : self.pw})
         self.session = result['Login']['Session']['id']
+
+    def _logout(self):
+        """Smug._logout()
+        """
+        self._request('smugmug.logout', {})
 
     def _request(self, method, params):
         """Smug._request(method, params)
