@@ -55,7 +55,7 @@ class Smug(object):
                 """Smug.Album.Image.getKeywords()
                 """
                 return [x.strip('"')
-                        for x in re.findall(r'(".*"|\w+)', self.Keywords)]
+                        for x in re.findall(r'(".*?"|\w+)', self.Keywords)]
             def changeKeywords(self, kw):
                 """Smug.Album.Image.changeKeywords(kw)
                 """
