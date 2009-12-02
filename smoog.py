@@ -175,12 +175,14 @@ class Smug(object):
         """
         return [x for x in self.getAlbums() if (x.Title==n)][0]
 
-    def getAlbums(self):
+    def getAlbums(self, heavy=True):
         """Smug.getAlbums()
 
         Get all albums.
         """
-        req = self._request('smugmug.albums.get', {})
+        if heavy:  heavy = "1"
+        else:      heavy = "0"
+        req = self._request('smugmug.albums.get', {'Heavy': heavy})
         albums = req['Albums']
         return [self.Album(self, a) for a in albums]
 
