@@ -29,12 +29,11 @@ def kwRename(match, to):
     for album in s.getAlbums():
         for image in album.getImages():
             old = image.getKeywords()
-            new = old[:]
-            for k in new:
-                if re.match(match, k):
-                    new.remove(k)
-                    if (to != "") and (not to in new):
-                        new.append(to)
+            new = []
+            for k in old:
+                k = re.sub(match, to, k)
+                if len(k) and (not k in new):
+                    new.append(k)
             if old != new:
                 if really:
                     image.changeKeywords(new)
@@ -54,7 +53,7 @@ def usage(err):
 def main():
     if len(sys.argv) != 3:
         usage(1)
-    kwRename(sys.argv[1], sys.argv[2])
+    kwRename('^' + sys.argv[1] + '$', sys.argv[2])
     
 if __name__ == '__main__':
     main()
