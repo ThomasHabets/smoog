@@ -20,6 +20,8 @@ import urllib
 import urllib2
 import urlparse
 import re
+import sys
+import traceback
 
 try    : import json
 except : import simplejson as json
@@ -29,7 +31,7 @@ API_VERSION='1.2.2'
 
 def userCredentials():
     f = open("/home/thompa/.smug.cfg")
-    apikey, email, password = f.readlines()
+    apikey, email, password = [x.strip() for x in f.readlines()]
     return apikey, email, password
 
 class Smug(object):
@@ -37,6 +39,7 @@ class Smug(object):
     """
     UPLOAD_URL='http://upload.smugmug.com/photos/xmlrawadd.mg'
     API_URL='https://api.smugmug.com/services/api/json/1.2.2/'
+    API_URL_DATA='http://api.smugmug.com/services/api/json/1.2.2/'
 
     class Album(object):
         """class Smug.Album
@@ -75,8 +78,11 @@ class Smug(object):
             """Album.getUrl()
             FIXME: user real category/subcategory url, don't fake it.
             """
-            return ("http://fnalbum.smugmug.com/Other/%s/%s_%s"
-                    % (self.Title, self.id, self.Key))
+            return ("http://fnalbum.smugmug.com/%s/%s/%s_%s"
+                    % (self.Category['Name'],
+                       self.Title,
+                       self.id,
+                       self.Key))
 
         def __init__(self, parent, data):
             """Smug.Album.__init__(parent, data)
@@ -85,6 +91,11 @@ class Smug(object):
             self.parent = parent
             for k in data.keys():
                 self.__dict__[k] = data[k]
+
+        def __lt__(self, rhs):
+            if self.Category['Name'] != rhs.Category['Name']:
+                return self.Category['Name'] < rhs.Category['Name']
+            return self.Title < rhs.Title
 
         def getImages(self, heavy = True):
             """Smug.Album.getImages(self, heavy=True)
@@ -96,7 +107,7 @@ class Smug(object):
                                         'AlbumKey': str(self.Key),
                                         'Heavy': heavy
                                         })
-            return [self.Image(self, x) for x in res['Album']['Images']]
+            return (self.Image(self, x) for x in res['Album']['Images'])
         def changeSettings(self, **kw):
             """Smug.Album.changeSettings(**kw)
             """
@@ -143,29 +154,30 @@ class Smug(object):
               if result['stat'] != 'ok' :
                   raise Exception('Bad result code')
           except Exception, e:
-              print 'Error issuing request'
-              print 'Request was:'
-              print '  ' + str(request)
+              errstr = '''Error issuing request
+Request was:
+   %(req)s''' % ({'req': re.sub("([&?])",r"\\\n\t\1",str(request))})
               try :
-                  print 'Response was:'
-                  print response
+                  errstr +=  '\nResponse was:\n  ' + re.sub(",",
+                                                            ",\n   ",
+                                                            response)
               except :
                   pass
-              import traceback
-              traceback.print_exc()
-              raise e
+              #traceback.print_exc()
+              raise Exception(errstr)
           return result
         
         #print "<smugmug>", self.session, method, params
         ps = [urllib.quote(key) + '=' + urllib.quote(params[key])
               for key in params]
         ps += ['method=' + method]
+        api_url = self.API_URL
         if self.session is not None:
             ps += ['SessionID=' + self.session]
-        url = urlparse.urljoin(self.API_URL, '?' + '&'.join(ps))
+            #api_url = self.API_URL_DATA
+
+        url = urlparse.urljoin(api_url, '?' + '&'.join(ps))
         data = safe_geturl(url)
-        if data['stat'] != 'ok':
-            raise "FIXME"
         return data
 
     def getAlbum(self, n):
