@@ -10,7 +10,7 @@ import sys
 import smoog as smug
 
 def albumCopySettings(src, dst):
-    s = smug.Smug(*smug.userCredentials())
+    s = smug.Smug(smug.userCredentials())
     src = s.getAlbum(src)
     dst = s.getAlbum(dst)
     d = {}

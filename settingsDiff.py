@@ -4,7 +4,7 @@ import smoog as smug
 import sys
 
 def diffAlbum(a, b):
-    s = smug.Smug(*smug.userCredentials())
+    s = smug.Smug(smug.userCredentials())
     a = s.getAlbum(a)
     b = s.getAlbum(b)
     print "%12s %30s %30s" % ('', 'Left', 'Right')

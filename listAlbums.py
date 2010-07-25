@@ -4,7 +4,7 @@
 import smoog as smug
 
 def html():
-    s = smug.Smug(*smug.userCredentials())
+    s = smug.Smug(smug.userCredentials())
     albums = [x for x in s.getAlbums()
               if x.Category['Name'] != 'fnalbum'
               and x.Public == True]

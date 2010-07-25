@@ -26,7 +26,7 @@ def kwRename(match, to):
 
     If 'to' is empty, just remove all keywords matching 'match'.
     """
-    s = smug.Smug(*smug.userCredentials())
+    s = smug.Smug(smug.userCredentials())
     n = 0
     n2 = 0
     albumn = 0

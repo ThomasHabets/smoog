@@ -7,7 +7,7 @@ Library for doing smugmug stuff.
 
 Example use:
 
-s = smoog.Smug(*smug.userCredentials())
+s = smoog.Smug(smug.userCredentials())
 for album in s.getAlbums():
   for image in album.getImages():
     print album.Title, image.Caption
@@ -22,9 +22,21 @@ import urlparse
 import re
 import sys
 import traceback
+from optparse import OptionParser
 
 try    : import json
 except : import simplejson as json
+
+# try to enable keepalive
+try:
+    from urlgrabber.keepalive import HTTPHandler
+    keepalive_handler = HTTPHandler()
+    opener = urllib2.build_opener(keepalive_handler)
+    urllib2.install_opener(opener)
+except:
+    pass
+ 
+# fo = urllib2.urlopen('http://www.python.org')
 
 ##########
 API_VERSION='1.2.2'
@@ -53,6 +65,9 @@ class Smug(object):
                 self.data = data
                 self.album = album
                 for k in data.keys():
+                    #if isinstance(data[k], basestring):
+                    #    self.__dict__[k] = data[k].encode('utf-8')
+                    #else:
                     self.__dict__[k] = data[k]
             def getKeywords(self):
                 """Smug.Album.Image.getKeywords()
@@ -115,13 +130,20 @@ class Smug(object):
             d['AlbumID'] = str(self.id)
             self.parent._request('smugmug.albums.changeSettings', d)
 
-    def __init__(self, key, email, pw):
+    def __init__(self, (key, email, pw), options=None):
         """Smug.__init__(self, key, email, password)
         """
+        if options is None:
+            class Dummy:
+                pass
+            options = Dummy()
+            options.verbose = 0
+            
         self.email = email
         self.pw = pw
         self.apikey = key
         self.session = None
+        self.options = options
         self._login()
 
     def __del__(self):
@@ -148,12 +170,15 @@ class Smug(object):
         """Smug._request(method, params)
         """
         def safe_geturl(request) :
-          try :
+          try:
+              if self.options.verbose:
+                  print "URL:",request
               response = urllib2.urlopen(request).read()
               result = json.loads(response)
               if result['stat'] != 'ok' :
                   raise Exception('Bad result code')
           except Exception, e:
+              raise
               errstr = '''Error issuing request
 Request was:
    %(req)s''' % ({'req': re.sub("([&?])",r"\\\n\t\1",str(request))})
@@ -198,6 +223,27 @@ Request was:
         albums = req['Albums']
         return [self.Album(self, a) for a in albums]
 
+    def request(self, key, **kw):
+        print kw
+        return self._request(key, kw)
+
+def main():
+    import smooglist, smoogshow
+
+    cmd = sys.argv[1]
+    parms = sys.argv[1:]
+
+    parser = OptionParser()
+    parser.add_option("--verbose", '-v', dest="verbose",
+                      action="count",
+                      help="increase verbosity",
+                      default=0)
+
+    {'list': smooglist,
+     'show': smoogshow}[cmd].main(parser, parms)
+
+if __name__ == '__main__':
+    main()
 
 # Local Variables:
 # mode: python

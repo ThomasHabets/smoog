@@ -1,0 +1,70 @@
+_smoog_show_album()
+{
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+	local IFS=$'\n'
+	COMPREPLY=($(compgen -W "$(smoog list album --raw \
+			           | sed 's/ /\\\\ /g')" -- ${cur}))
+}
+
+_smoog_show_image()
+{
+	COMPREPLY=()
+}
+
+_smoog_show()
+{
+	local typ cur
+        cur="${COMP_WORDS[COMP_CWORD]}"
+
+	opts="album image"
+
+	case "${COMP_WORDS[2]}" in
+	     album) _smoog_show_album ;;
+	     image) _smoog_show_image ;;
+	     *) COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+	esac
+}
+
+_smoog_list_album()
+{
+        local cur="${COMP_WORDS[COMP_CWORD]}"
+	local opts="cr option=value --raw"
+	COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+}
+
+_smoog_list_image()
+{
+	COMPREPLY=()
+}
+
+_smoog_list()
+{
+	local typ cur
+        cur="${COMP_WORDS[COMP_CWORD]}"
+
+	opts="album image"	
+
+	case "${COMP_WORDS[2]}" in
+	     album) _smoog_list_album ;;
+	     image) _smoog_list_image ;;
+	     *) COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+	esac
+}
+
+
+_smoog()
+{
+	local typ cur
+        cur="${COMP_WORDS[COMP_CWORD]}"
+
+	opts="show list"
+
+	case "${COMP_WORDS[1]}" in
+	     list) _smoog_list ;;
+	     show) _smoog_show ;;
+	     *) COMPREPLY=($(compgen -W "${opts}" -- ${cur}))
+	esac
+}
+
+#complete -o default -o nospace -F _smoog smoog
+complete -F _smoog smoog

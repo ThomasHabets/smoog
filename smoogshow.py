@@ -13,14 +13,10 @@ def show_album(s, n):
     for k in a.data.keys():
         print "%-12s %30s" % (k, a.data[k])
 
-def main():
-    s = smoog.Smug(*smoog.userCredentials())
-    {'album': show_album}[sys.argv[1]](s,sys.argv[2])
-
-def test():
-    s = smoog.Smug(*smoog.userCredentials())
-    for s in s.getAlbums():
-        print s.Title
+def main(parser, parms):
+    (options, args) = parser.parse_args(parms)
+    s = smoog.Smug(smoog.userCredentials(), options)
+    {'album': show_album}[parms[1]](s,parms[2])
 
 if __name__ == "__main__":
     main()

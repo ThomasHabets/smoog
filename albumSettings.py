@@ -10,7 +10,7 @@ import sys
 import smoog as smug
 
 def albumSettings(**kw):
-    s = smug.Smug(*smug.userCredentials())
+    s = smug.Smug(smug.userCredentials())
     for album in s.getAlbums():
         print "Modifying", album.Title
         album.changeSettings(**kw)
