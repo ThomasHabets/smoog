@@ -29,8 +29,9 @@ except : import simplejson as json
 
 # try to enable keepalive
 try:
-    from urlgrabber.keepalive import HTTPHandler
+    from urlgrabber.keepalive import HTTPHandler,HTTPSHandler
     keepalive_handler = HTTPHandler()
+    keepalive_handler2 = HTTPSHandler()
     opener = urllib2.build_opener(keepalive_handler)
     urllib2.install_opener(opener)
 except:
@@ -174,6 +175,7 @@ class Smug(object):
               if self.options.verbose:
                   print "URL:",request
               response = urllib2.urlopen(request).read()
+              #print response
               result = json.loads(response)
               if result['stat'] != 'ok' :
                   raise Exception('Bad result code')
@@ -199,7 +201,7 @@ Request was:
         api_url = self.API_URL
         if self.session is not None:
             ps += ['SessionID=' + self.session]
-            #api_url = self.API_URL_DATA
+            api_url = self.API_URL_DATA
 
         url = urlparse.urljoin(api_url, '?' + '&'.join(ps))
         data = safe_geturl(url)
